@@ -1,7 +1,7 @@
 {
   "name": "graceful-shutdown-example",
   "version": "1.0.0",
-  "description": "rpc",
+  "description": "graceful shutdown of nodejs workers",
   "main": "index.js",
   "scripts": {
     "start": "node master.js",
@@ -16,5 +16,6 @@
     "fork"
   ],
   "author": "caiyu.xcy",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {}
 }

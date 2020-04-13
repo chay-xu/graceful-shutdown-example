@@ -1,19 +1,31 @@
+'use strict';
+
 const cluster = require('cluster');
+const killTree = require('./kill-tree');
 
 module.exports = options => {
   const { processKillTimeout = 3000, server } = options;
 
   let throwErrorTimes = 0
 
+  process.on('SIGTERM', function onSigterm () {
+    console.info(`Only graceful shutdown, worker ${process.pid}`)
+    close()
+  })
+
   process.on('uncaughtException', function(err) {
     throwErrorTimes += 1;
-    console.log('==========================');
+    console.log('====uncaughtException====');
     console.error(err)
 
     if (throwErrorTimes > 1) {
       return;
     }
 
+    close()
+  });
+
+  function close(){
     server.on('request', (req, res) => {
       req.shouldKeepAlive = false;
       res.shouldKeepAlive = false;
@@ -24,7 +36,11 @@ module.exports = options => {
 
     if (processKillTimeout) {
       const timer = setTimeout(() => {
-        process.exit(1);
+        // Kill all child process
+        killTree(process.pid,()=>{
+          // Worker process to exit
+          process.exit(1);
+        })
       }, processKillTimeout);
 
       timer.unref && timer.unref();
@@ -45,5 +61,5 @@ module.exports = options => {
         console.error('Error on server close');
       }
     }
-  });
+  }
 };

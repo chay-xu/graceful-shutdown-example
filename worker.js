@@ -1,30 +1,33 @@
-const cluster = require('cluster');
 const http = require('http');
-const numCPUs = require('os').cpus().length;
 
 const graceful = require('./graceful');
+const { fork } = require('child_process');
+
+fork('./child');
 
 // Workers can share any TCP connection
 // In this case it is an HTTP server
 const server = http
   .createServer((req, res) => {
-    // res.writeHead(200);
-    // res.end('hello world\n');
-
     // services excption
     try {
-      throw new Error('happened error');
+      throw new Error('Happened error');
     } catch (err) {
       res.writeHead(200);
       res.end(`${err.stack.toString()}`);
     }
+    // console.log(res)
+    // res.setHeader('Content-Type', 'application/json');
+    // res.setHeader('Access-Control-Allow-Origin', '*');
+    // res.writeHead(200);
+    // res.end(JSON.stringify({ success: true }));
   })
   .listen(8000);
 
 // console.log(`Worker ${process.pid} started`);
 graceful({
-  server
-})
+  server,
+});
 
 // Send to master
 process.send({
@@ -36,7 +39,7 @@ process.on('message', data => {
   // Receive by the master
   if (data.action && data.action === 'throw error') {
     // The process threw an exception
-    throw new Error('kill myself');
+    throw new Error('Kill myself');
   }
-  console.log('worker message', data);
+  console.log('Worker message', data);
 });
