@@ -1,7 +1,8 @@
-const http = require('http');
+'use strict';
 
-const graceful = require('./graceful');
+const http = require('http');
 const { fork } = require('child_process');
+const graceful = require('./graceful');
 
 fork('./child');
 
@@ -24,7 +25,6 @@ const server = http
   })
   .listen(8000);
 
-// console.log(`Worker ${process.pid} started`);
 graceful({
   server,
 });

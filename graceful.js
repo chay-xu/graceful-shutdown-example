@@ -27,9 +27,11 @@ module.exports = options => {
 
   function close(){
     server.on('request', (req, res) => {
+      // closing the http request
       req.shouldKeepAlive = false;
       res.shouldKeepAlive = false;
       if (!res._header) {
+        // closing the socket connection
         res.setHeader('Connection', 'close');
       }
     });

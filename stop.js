@@ -1,6 +1,8 @@
+'use strict';
+
 const util = require('util');
 const childProcess = require('child_process');
-const killTree = require('./kill-tree');
+// const killTree = require('./kill-tree');
 
 const exec = util.promisify(childProcess.exec);
 const isWin = process.platform === 'win32';
@@ -56,8 +58,7 @@ const main = async () => {
 
 main().then((result)=>{
   result.forEach((item)=>{
-    // console.log(item)
-    // process.kill(item.pid, 'SIGTERM')
-    killTree(item.pid)
+    process.kill(item.pid, 'SIGTERM')
+    // killTree(item.pid)
   });
 })
